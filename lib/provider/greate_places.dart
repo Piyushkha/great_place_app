@@ -12,6 +12,10 @@ class GreatPlace with ChangeNotifier {
     return [..._items];
   }
 
+  Place findById(var id) {
+    return _items.firstWhere((Place) => Place.id == id);
+  }
+
   void addplace(String pickedtitle, File pickedImage) {
     // ignore: unused_local_variable
     final newPlace = Place(

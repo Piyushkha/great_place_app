@@ -1,13 +1,12 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
+import 'package:great_place/widgets/location_input.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../provider/greate_places.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:path/path.dart' as path;
-// import "package:table_calendar/table_calendar.dart";
+import '../widgets/location_input.dart';
 
 class AddPlaceScreens extends StatefulWidget {
   static const routeName = '/add-place';
@@ -20,17 +19,67 @@ class AddPlaceScreens extends StatefulWidget {
 class _AddPlaceScreensState extends State<AddPlaceScreens> {
   final _titleController = TextEditingController();
   File? _image;
+  File? temimage;
 
   Future pickimage() async {
-    final cam = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (cam == null) return;
-    final tempary = File(cam.path);
+    // final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (image == null) return;
+
+    temimage = File(image.path);
     setState(() {
-      this._image = tempary;
+      this._image = temimage;
     });
     final appdir = await syspaths.getApplicationDocumentsDirectory();
-    final filename = path.basename(tempary.path);
-    final savedImage = await tempary.copy("${appdir.path}/$filename");
+    final filename = path.basename(temimage!.path);
+    final savedImage = await temimage!.copy("${appdir.path}/$filename");
+  }
+
+  Future pickimagecam() async {
+    // final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final cam = await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (cam == null) return;
+
+    temimage = File(cam.path);
+    setState(() {
+      this._image = temimage;
+    });
+    final appdir = await syspaths.getApplicationDocumentsDirectory();
+    final filename = path.basename(temimage!.path);
+    final savedImage = await temimage!.copy("${appdir.path}/$filename");
+  }
+
+  void _showModel(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+              child: Container(
+            child: Wrap(
+              children: [
+                ListTile(
+                  title: Text("Gallery"),
+                  leading: Icon(Icons.browse_gallery),
+                  onTap: () {
+                    pickimage();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                // _image != null ?  : pickimage),
+                ListTile(
+                  title: Text("Camera"),
+                  leading: Icon(Icons.camera),
+                  onTap: () {
+                    pickimagecam();
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
+          ));
+        });
   }
 
   void _saveData() {
@@ -69,20 +118,43 @@ class _AddPlaceScreensState extends State<AddPlaceScreens> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CircleAvatar(
-                            radius: 100,
-                            backgroundColor: Colors.grey,
-                            backgroundImage:
-                                _image != null ? FileImage(_image!) : null,
-                          ),
+                          Stack(alignment: Alignment.center, children: [
+                            CircleAvatar(
+                              radius: 87,
+                              backgroundColor: Colors.black,
+                            ),
+                            CircleAvatar(
+                              radius: 85,
+                              backgroundColor: Colors.white,
+                            ),
+                            CircleAvatar(
+                              radius: 80,
+                              backgroundColor: Colors.grey[400],
+                              backgroundImage:
+                                  _image != null ? FileImage(_image!) : null,
+                            ),
+                            Positioned(
+                                bottom: 0,
+                                right: -25,
+                                child: RawMaterialButton(
+                                  onPressed: () {
+                                    _showModel(context);
+                                  },
+                                  elevation: 4.0,
+                                  fillColor: Color(0xFFF5F6F9),
+                                  child: Icon(
+                                    Icons.edit_outlined,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  padding: EdgeInsets.all(15.0),
+                                  shape: CircleBorder(),
+                                )),
+                          ]),
                           Padding(padding: EdgeInsets.all(15)),
-                          ElevatedButton.icon(
-                              onPressed: () => pickimage(),
-                              label: Text("Pick image"),
-                              icon: Icon(
-                                Icons.camera,
-                                size: 50,
-                              ))
+                          SizedBox(
+                            height: 15,
+                          ),
+                          LocationInput()
                         ],
                       ),
                     )

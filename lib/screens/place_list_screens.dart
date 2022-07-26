@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:great_place/screens/add_places_screens.dart';
+import 'package:great_place/screens/place_detail_screens.dart';
 import 'package:provider/provider.dart';
+import './add_places_screens.dart';
 import '../provider/greate_places.dart';
 
 class MyHomepage extends StatefulWidget {
@@ -47,7 +49,11 @@ class _MyHomepageState extends State<MyHomepage> {
                                       FileImage(greateplaces.items[i].image),
                                 ),
                                 title: Text(greateplaces.items[i].title),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                      PlaceDetail.routeName,
+                                      arguments: greateplaces.items[i].id);
+                                },
                               ),
                             ),
                 ),

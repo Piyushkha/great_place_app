@@ -35,6 +35,12 @@ dependencies:
   path: ^1.8.1
   # sqlite: ^2.0.0
   sqflite: ^2.0.3
+  # location: ^4.2.0
+  geolocator: ^9.0.1
+  # location_platform_interface: ^2.3.0
+  geocoding: ^2.0.4
+
+
 
 
 
